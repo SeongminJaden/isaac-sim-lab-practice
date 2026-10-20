@@ -33,12 +33,16 @@ case "$viz" in kit|none) ;; *) echo 'Use --viz kit|none' >&2; exit 2 ;; esac # �
 args=(run --frozen --extra isaacsim isaaclab) # 배열로 인자를 전달해 셸 재해석을 피한다.
 task=(--task Isaac-Cartpole --num_envs "$num_envs") # 수업 과제와 환경 수를 지정한다.
 backend=(physics=isaacsim_physx --viz "$viz") # 강의의 물리 엔진과 화면 모드다.
+play_options=() # 창 없는 재생은 기존 장치 및 실행 속도를 유지한다.
+if [[ "$mode" == play && "$viz" == kit ]]; then # 화면 재생은 마우스 외력 실습용으로 구성한다.
+    play_options=(--device cpu --real-time '--kit_args=--enable omni.physx.ui') # CPU 물리와 실시간 재생을 선택하고 물리 마우스 UI를 자동 활성화한다.
+fi
 case "$mode" in # 단계별 공식 CLI 인자를 구성한다.
     setup) args=(sync --frozen --extra isaacsim) ;; # 잠금 파일의 의존성을 설치한다.
     list) args=(run --frozen --extra isaacsim python scripts/environments/list_envs.py --show_presets) ;; # 이 EA에는 list_envs 하위 명령이 없어 공식 스크립트를 직접 실행한다.
     random) args+=(random_agent "${task[@]}" "${backend[@]}") ;; # 무작위 정책을 실행한다.
     train) args+=(train --rl_library rsl_rl "${task[@]}" --seed 42 --max_iterations "$iterations" "${backend[@]}") ;; # PPO를 학습한다.
-    play) args+=(play --rl_library rsl_rl "${task[@]}" --seed 123 --checkpoint "$checkpoint" "${backend[@]}") ;; # 저장된 정책을 재생한다.
+    play) args+=(play --rl_library rsl_rl "${task[@]}" --seed 123 --checkpoint "$checkpoint" "${backend[@]}" "${play_options[@]}") ;; # 저장된 정책을 재생한다.
 esac
 if ((preview)); then # 미리보기는 Git이나 uv를 실행하지 않는다.
     python3.12 - "$lab_dir" "$commit" "${args[@]}" <<'PY'
@@ -62,7 +66,7 @@ changes=$(git -C "$lab_dir" status --porcelain --untracked-files=no) # 로그 �
 if [[ "$mode" == play && "$checkpoint" != latest && "$checkpoint" != best ]]; then # 정책 파일 경로를 검사한다.
     [[ -f "$checkpoint" ]] || { echo 'Checkpoint must be a file' >&2; exit 1; } # 없는 파일과 디렉터리를 거부한다.
     checkpoint=$(realpath -- "$checkpoint") # cd 전에 상대 경로를 절대 경로로 바꾼다.
-    args=(run --frozen --extra isaacsim isaaclab play --rl_library rsl_rl "${task[@]}" --seed 123 --checkpoint "$checkpoint" "${backend[@]}") # 공백을 보존한다.
+    args=(run --frozen --extra isaacsim isaaclab play --rl_library rsl_rl "${task[@]}" --seed 123 --checkpoint "$checkpoint" "${backend[@]}" "${play_options[@]}") # 공백과 마우스 실습 설정을 보존한다.
 fi
 cd -- "$lab_dir" # uv가 Lab의 프로젝트 및 잠금 파일을 사용하게 한다.
 exec uv "${args[@]}" # uv 종료 코드를 호출자에게 그대로 전달한다.

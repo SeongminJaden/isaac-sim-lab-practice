@@ -126,6 +126,10 @@ bash ubuntu/04_cartpole.sh --mode play --checkpoint latest
 
 기본 Lab 경로는 `$HOME/pa-course/IsaacLab-6.1`이다. 바꾸려면 모든 단계에 `--lab-dir "경로"`를 동일하게 붙인다. 기존 checkout의 버전이 다르면 새 경로를 사용한다. 공식 lock을 유지하며 Sim 전용 환경과 섞지 않는다.
 
+`--mode play`의 기본 화면 재생은 CPU 물리 계산(`--device cpu`), 실시간 속도(`--real-time`), 물리 마우스 UI 자동 활성화(`--kit_args="--enable omni.physx.ui"`)를 적용한다. Script Editor에서 확장을 따로 켤 필요 없이, 재생 중인 카트 본체를 **Shift + 마우스 왼쪽 버튼 드래그**로 당긴 뒤 놓아 균형 회복을 관찰한다. 렌더링에는 여전히 NVIDIA GPU가 필요하며, 종료 조건을 넘으면 환경이 초기화될 수 있다. `--viz none` 재생과 학습·무작위 실행에는 이 설정을 강제하지 않는다. Windows 실행기는 이번 변경 대상이 아니다.
+
+검증 범위: WSL Ubuntu에서 실행 인자, 명시적 정책 경로, 다른 실행 모드 보존 및 셸 구문을 포함한 자동 검사 17개가 통과했다. Ubuntu 데스크톱에서 실제 GUI 드래그와 외력 반응은 아직 검증하지 않았다.
+
 `unrecognized arguments: list_envs --show_presets`가 나오면 이전 실행기를 사용 중이다. Git으로 받은 실습자료는 실습 폴더에서 `git pull --ff-only`로 갱신한다. ZIP으로 받았다면 최신 `ubuntu/04_cartpole.sh`를 받는다. 설치를 다시 할 필요는 없다. PPT/PDF 24쪽의 이전 목록 조회 명령도 아래 명령으로 교체한다.
 
 ```bash

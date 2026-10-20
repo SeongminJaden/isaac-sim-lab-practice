@@ -77,6 +77,18 @@ class LauncherTests(unittest.TestCase):  # 실제 셸에서 옵션 전달과 실
                     self.assertIn("Isaac-Cartpole", data["arguments"])  # 수업 과제 이름을 확인한다.
                     self.assertIn("physics=isaacsim_physx", data["arguments"])  # PhysX 선택이 누락되면 실패한다.
 
+    @unittest.skipIf(WINDOWS, "Ubuntu mouse playback settings")
+    def test_ubuntu_mouse_playback(self):  # 화면 재생에만 물리 마우스 실습 설정이 들어가야 한다.
+        args = json.loads(self.preview("Play").stdout)["arguments"]  # 기본 재생 인자를 읽는다.
+        self.assertEqual(args[args.index("--device") + 1], "cpu")  # 관절 외력 실습은 CPU 물리를 사용한다.
+        self.assertIn("--real-time", args)  # 마우스 조작을 위해 실시간 속도로 재생한다.
+        self.assertIn("--kit_args=--enable omni.physx.ui", args)  # Kit 인자 전체를 하나의 토큰으로 전달한다.
+        for mode, extra in (("Play", ["--viz", "none"]), ("Train", []), ("Random", [])):
+            other = json.loads(self.preview(mode, extra).stdout)["arguments"]  # 다른 실행 경로에는 설정을 강제하지 않는다.
+            self.assertNotIn("--device", other)
+            self.assertNotIn("--real-time", other)
+            self.assertFalse(any(arg.startswith("--kit_args") for arg in other))
+
     def test_training_overrides(self):  # 낮은 환경 수·짧은 학습·창 없는 실행을 선택할 수 있어야 한다.
         extra = self.options(["-NumEnvs", "2", "-Iterations", "3", "-Viz", "none"], ["--num-envs", "2", "--iterations", "3", "--viz", "none"])  # 양쪽에서 같은 설정이다.
         result = self.preview("Train", extra)  # 설정을 실제 실행기에 전달한다.
@@ -168,6 +180,10 @@ finally { (Get-Location).Path | Set-Content -LiteralPath $env:TEST_AFTER -Encodi
         self.assertEqual(data["cwd"], lab)  # uv는 Lab 프로젝트 폴더에서 실행되어야 한다.
         args = data["arguments"]  # 실제 전달된 인자를 읽는다.
         self.assertEqual(args[args.index("--checkpoint") + 1], expected)  # 경로는 하나의 절대 경로 인자여야 한다.
+        if not WINDOWS:  # 명시적 정책 경로로 재구성해도 마우스 실습 설정을 유지해야 한다.
+            self.assertEqual(args[args.index("--device") + 1], "cpu")
+            self.assertIn("--real-time", args)
+            self.assertIn("--kit_args=--enable omni.physx.ui", args)
 
     def test_uv_failure_is_not_reported_as_success(self):  # 외부 학습 프로세스 실패를 호출자가 알 수 있어야 한다.
         result, data, _, _ = self.guarded_run(mode="Train", exit_code=7)  # 가짜 학습이 실패하게 한다.
