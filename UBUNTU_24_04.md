@@ -35,6 +35,8 @@ python3.12 99_self_check.py
 
 ## 2. Sim 6.1 전용 환경
 
+8 GB GPU에서 기본 화면이 느리면 호환성 검사 창을 닫은 뒤, 아래 마지막 기본 화면 실행 명령 대신 **2-1의 저사양 실행 명령**을 사용한다. 설치가 끝났다면 설치 스크립트를 다시 실행할 필요가 없다.
+
 ```bash
 # 새 가상환경에 Sim과 확장 캐시를 설치한다. 기존 경로는 덮어쓰지 않는다.
 bash ubuntu/01_install_sim.sh
@@ -47,6 +49,44 @@ export ISAAC_PYTHON="$HOME/pa-course/.venv-isaacsim/bin/python"
 ```
 
 기존 Isaac Sim 6.1 Workstation을 쓰면 설치 스크립트를 생략하고 `ISAAC_PYTHON`에 실제 `python.sh` 경로를 지정한다. 예: `export ISAAC_PYTHON="$HOME/isaacsim/python.sh"`. 새 터미널을 열면 이 변수를 다시 지정한다.
+
+### 2-1. 8 GB GPU용 저사양 화면 실행
+
+열려 있는 Sim과 호환성 검사 창을 먼저 닫는다. 아래 코드를 Ubuntu Bash 터미널에 한 번에 붙여 넣는다. NVIDIA GPU를 직접 사용하는 Ubuntu PC 기준이며, WSL의 RTX 실행 지원을 추가하는 설정은 아니다.
+
+```bash
+# 설치된 Isaac Sim 실행 파일이다.
+SIM="$HOME/pa-course/.venv-isaacsim/bin/isaacsim"
+# 저사양 실행 옵션을 문자열 배열로 구성한다.
+LOW_OPTIONS=(
+    # 단순화된 렌더러를 사용한다.
+    "--/rtx/rendermode=MinimalRendering"
+    # 텍스처 표현을 줄이는 Constant Diffuse 모드다.
+    "--/rtx/minimal/mode=3"
+    # 실제 렌더링 너비를 낮춘다.
+    "--/app/renderer/resolution/width=640"
+    # 실제 렌더링 높이를 낮춘다.
+    "--/app/renderer/resolution/height=360"
+    # 조작용 창 너비는 별도로 지정한다.
+    "--/app/window/width=960"
+    # 조작용 창 높이는 별도로 지정한다.
+    "--/app/window/height=540"
+    # 안티앨리어싱을 끈다.
+    "--/rtx/post/aa/op=0"
+    # 단일 GPU로 렌더링한다.
+    "--/renderer/multiGpu/enabled=false"
+    # 텍스처 스트리밍의 VRAM 예산을 20%로 낮춘다.
+    "--/rtx-transient/resourcemanager/texturestreaming/memoryBudget=0.2"
+)
+# 기본 실행 명령 대신 저사양 옵션을 전달한다.
+"$SIM" "${LOW_OPTIONS[@]}"
+```
+
+렌더링 해상도는 640×360, 조작용 창은 960×540이다. 텍스처가 필요하면 `--/rtx/minimal/mode=3`을 `2`로 바꾼다. `memoryBudget=0.2`는 **텍스처 스트리밍 예산**이며 프로그램 전체 VRAM을 20%로 제한하는 값은 아니다. 너무 낮추면 텍스처 품질이나 로딩에 영향을 줄 수 있다.
+
+이 설정은 이번에 여는 Sim에 적용된다. 별도로 시작하는 Python 예제와 Isaac Lab에는 자동 적용되지 않는다. RGB 카메라 실습은 재질·조명 표현이 달라질 수 있으므로 기본 설정의 결과와 구분한다. 기본 화면으로 돌아가려면 창을 닫고 같은 터미널에서 옵션 없이 `"$SIM"`을 실행한다.
+
+Isaac Sim 6.1의 [렌더링 모드](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/reference_material/rendering_modes.html)와 [메모리 최적화 안내](https://docs.isaacsim.omniverse.nvidia.com/6.1.0/reference_material/sim_performance_optimization_handbook.html#reducing-gpu-memory-utilization)를 기준으로 작성했다. 이 옵션 조합의 실제 GPU 메모리 감소량은 아직 측정하지 않았으며, 8 GB에서 실행을 보장하지 않는다.
 
 ## 3. 낙하, 카메라, 보상
 
