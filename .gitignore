@@ -1,0 +1,9 @@
+# 가상환경, 개인 실험 결과, 학습 정책은 강의 소스와 분리한다.
+__pycache__/
+*.pyc
+.venv/
+outputs/
+logs/
+*.pt
+*.pth
+.env
