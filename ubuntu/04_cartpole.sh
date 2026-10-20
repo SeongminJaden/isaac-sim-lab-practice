@@ -35,7 +35,7 @@ task=(--task Isaac-Cartpole --num_envs "$num_envs") # 수업 과제와 환경 �
 backend=(physics=isaacsim_physx --viz "$viz") # 강의의 물리 엔진과 화면 모드다.
 case "$mode" in # 단계별 공식 CLI 인자를 구성한다.
     setup) args=(sync --frozen --extra isaacsim) ;; # 잠금 파일의 의존성을 설치한다.
-    list) args+=(list_envs --show_presets) ;; # 과제 목록을 조회한다.
+    list) args=(run --frozen --extra isaacsim python scripts/environments/list_envs.py --show_presets) ;; # 이 EA에는 list_envs 하위 명령이 없어 공식 스크립트를 직접 실행한다.
     random) args+=(random_agent "${task[@]}" "${backend[@]}") ;; # 무작위 정책을 실행한다.
     train) args+=(train --rl_library rsl_rl "${task[@]}" --seed 42 --max_iterations "$iterations" "${backend[@]}") ;; # PPO를 학습한다.
     play) args+=(play --rl_library rsl_rl "${task[@]}" --seed 123 --checkpoint "$checkpoint" "${backend[@]}") ;; # 저장된 정책을 재생한다.

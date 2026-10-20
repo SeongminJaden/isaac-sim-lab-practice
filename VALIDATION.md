@@ -2,6 +2,14 @@
 
 ## 판정
 
+### 후속 수정: List 명령 오류
+
+2026-10-20 사용자 실행에서 `isaaclab: error: unrecognized arguments: list_envs --show_presets`가 확인됐다. 고정 커밋의 `source/isaaclab/isaaclab/cli/__init__.py`에는 `train`, `play`, `random_agent`가 등록되어 있지만 `list_envs`는 없다. 제공했던 목록 조회 명령의 오류다. Windows·Ubuntu 실행기의 List를 `uv run --frozen --extra isaacsim python scripts/environments/list_envs.py --show_presets`로 수정했다.
+
+기존 16개 CPU·실행기 검사는 잘못된 CLI 토큰도 기대값으로 사용해 이 오류를 잡지 못했다. 목록 호출의 기대값을 공식 스크립트 경로로 바로잡았으며, 수정 전 실패를 확인했다. GPU 실행 검증과 구분해 읽어야 한다. PPT/PDF 24쪽의 이전 명령은 README와 OS별 안내의 정오표를 따른다.
+
+수정 후 Windows·WSL에서 각각 16개 검사가 통과했다. 고정 소스의 `list_envs.py --show_presets --help`는 실제 파서에서 정상 종료했다. Windows의 수정 실행기로 환경 구성과 목록 출력까지 도달했으나, 종료 코드를 별도로 확인하려고 재실행했을 때 uv가 점유 중인 `Scripts/isaaclab.exe`를 교체하지 못해 `os error 32`로 중단됐다. 이 파일 점유 문제는 사용자에게 보고된 `unrecognized arguments`와 별개의 설치 동기화 문제이며, GPU 학습·재생 성공을 확인한 것은 아니다.
+
 **CPU 예제와 Windows·Ubuntu 실행기의 검사 각각 16개 통과. Isaac Lab Windows 의존성 설치 완료. GPU 실습 전체의 작동 검증은 미완료다.**
 
 | 항목 | 실제 수행 | 결과 |

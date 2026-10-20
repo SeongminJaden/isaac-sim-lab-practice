@@ -19,6 +19,8 @@
 
 PPT의 `windows_lab`은 이 저장소를 수업용 경로에 받은 폴더 이름이다. 이름과 달리 **두 OS의 코드가 모두 포함**되어 있다. 각 OS 안내의 준비 단계가 PPT 경로와 맞춰 준다. ZIP을 받았다면 압축을 푼 폴더의 이름을 `windows_lab`으로 바꾸어 해당 경로에 둔다. PPT/PDF는 2026-10-19 제작본이며 최신 실행기 검증 기록은 위의 `VALIDATION.md`다.
 
+**정오표(2026-10-20): PPT/PDF 24쪽의 `isaaclab list_envs --show_presets`는 이 고정 버전에서 지원하지 않는다.** Lab 폴더에서 `uv run --frozen --extra isaacsim python scripts/environments/list_envs.py --show_presets`를 사용한다. 최신 Windows·Ubuntu 실행기의 `List` 단계에는 이 수정이 반영되어 있다. 예전 ZIP을 받았다면 실행기 파일을 갱신한다.
+
 ## 실행 파일 대응
 
 | 단계 | Windows | Ubuntu |

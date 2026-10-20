@@ -22,7 +22,7 @@ $task = @('--task','Isaac-Cartpole','--num_envs',"$NumEnvs") # 수업 과제와 
 $backend = @('physics=isaacsim_physx','--viz',$Viz) # 기본 Newton 대신 강의의 PhysX를 선택한다.
 switch ($Mode) { # 단계별 공식 CLI 인자를 문자열 배열로 만든다.
     'Setup' { $uvArgs = @('sync','--frozen','--extra','isaacsim') } # Lab의 .venv에 패키지를 설치한다.
-    'List' { $uvArgs = $prefix + @('list_envs','--show_presets') } # 과제와 프리셋 목록을 조회한다.
+    'List' { $uvArgs = @('run','--frozen','--extra','isaacsim','python','scripts/environments/list_envs.py','--show_presets') } # 이 EA에는 list_envs 하위 명령이 없어 공식 스크립트를 직접 실행한다.
     'Random' { $uvArgs = $prefix + @('random_agent') + $task + $backend } # 무작위 정책으로 움직인다.
     'Train' { $uvArgs = $prefix + @('train','--rl_library','rsl_rl') + $task + @('--seed','42','--max_iterations',"$Iterations") + $backend } # PPO를 학습한다.
     'Play' { $uvArgs = $prefix + @('play','--rl_library','rsl_rl') + $task + @('--seed','123','--checkpoint',$Checkpoint) + $backend } # 저장된 정책을 재생한다.

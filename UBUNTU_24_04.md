@@ -126,6 +126,18 @@ bash ubuntu/04_cartpole.sh --mode play --checkpoint latest
 
 기본 Lab 경로는 `$HOME/pa-course/IsaacLab-6.1`이다. 바꾸려면 모든 단계에 `--lab-dir "경로"`를 동일하게 붙인다. 기존 checkout의 버전이 다르면 새 경로를 사용한다. 공식 lock을 유지하며 Sim 전용 환경과 섞지 않는다.
 
+`unrecognized arguments: list_envs --show_presets`가 나오면 이전 실행기를 사용 중이다. Git으로 받은 실습자료는 실습 폴더에서 `git pull --ff-only`로 갱신한다. ZIP으로 받았다면 최신 `ubuntu/04_cartpole.sh`를 받는다. 설치를 다시 할 필요는 없다. PPT/PDF 24쪽의 이전 목록 조회 명령도 아래 명령으로 교체한다.
+
+```bash
+# 서브셸 안에서만 Lab 폴더로 이동하여 원래 작업 위치를 유지한다.
+(
+    # 별도 Lab 경로를 사용했다면 이 경로를 바꾼다.
+    cd "$HOME/pa-course/IsaacLab-6.1" || exit 1
+    # 이 EA 버전에서는 목록 조회용 Python 스크립트를 직접 실행한다.
+    uv run --frozen --extra isaacsim python scripts/environments/list_envs.py --show_presets
+)
+```
+
 ```bash
 # 실제 설치·학습 없이 인자 배열만 확인한다.
 bash ubuntu/04_cartpole.sh --mode train --iterations 2 --viz none --print-command

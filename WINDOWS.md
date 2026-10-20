@@ -126,6 +126,17 @@ uv --version
 
 Lab 기본 경로는 `C:\isaac-course\IsaacLab-6.1`이다. 다른 경로를 사용할 때는 **모든 단계**에 같은 `-LabDir '경로'`를 지정한다. `latest`는 최근 학습 결과를 고르므로 수업 재현 시 실제 파일 경로를 기록한다. 300회 갱신은 시작 설정이며 수렴을 보장하지 않는다.
 
+`unrecognized arguments: list_envs --show_presets`가 나오면 이전 실행기를 사용 중이다. Git으로 받은 실습자료는 실습 폴더에서 `git pull --ff-only`로 갱신한다. ZIP으로 받았다면 공개 저장소의 최신 `04_cartpole.ps1`을 받는다. 설치를 다시 할 필요는 없다. PPT/PDF 24쪽의 이전 목록 조회 명령도 아래 명령으로 교체한다.
+
+```powershell
+# Lab 설치 폴더로 이동한다. 별도 경로를 사용했다면 바꾼다.
+Push-Location C:\isaac-course\IsaacLab-6.1
+# 이 EA 버전에서는 목록 조회용 Python 스크립트를 직접 실행한다.
+uv run --frozen --extra isaacsim python scripts/environments/list_envs.py --show_presets
+# 실습자료 폴더로 돌아온다.
+Pop-Location
+```
+
 ```powershell
 # 실제 실행 없이 사용할 명령 배열을 확인한다.
 .\04_cartpole.ps1 -Mode Train -NumEnvs 1 -Iterations 2 -Viz none -PrintCommand

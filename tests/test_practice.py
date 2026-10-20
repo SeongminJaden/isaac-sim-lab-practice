@@ -62,7 +62,7 @@ class LauncherTests(unittest.TestCase):  # 실제 셸에서 옵션 전달과 실
         return windows if WINDOWS else ubuntu  # 다른 OS의 인자를 섞지 않는다.
 
     def test_all_modes_match_upstream_cli(self):  # Sim 6.1 EA의 공식 명령 이름을 회귀 검사한다.
-        expected = {"Setup": "sync", "List": "list_envs", "Random": "random_agent", "Train": "train", "Play": "play"}  # 구버전 task 이름 혼용을 막는다.
+        expected = {"Setup": "sync", "List": "scripts/environments/list_envs.py", "Random": "random_agent", "Train": "train", "Play": "play"}  # List는 CLI 하위 명령이 아닌 실제 스크립트다.
         for mode, action in expected.items():  # 모든 사용자 진입점을 검사한다.
             with self.subTest(mode=mode):  # 실패한 단계를 구분한다.
                 result = self.preview(mode)  # 실제 배포 스크립트로 인자를 만든다.
@@ -71,6 +71,8 @@ class LauncherTests(unittest.TestCase):  # 실제 셸에서 옵션 전달과 실
                 self.assertEqual(data["commit"], PIN)  # 문서와 실행기가 같은 버전을 사용한다.
                 self.assertIn(action, data["arguments"])  # 공식 하위 명령이 들어 있어야 한다.
                 self.assertIn("--frozen", data["arguments"])  # 의존성을 임의 갱신하지 않는다.
+                if mode == "List":  # 고정 EA 소스의 목록 스크립트 호출을 확인한다.
+                    self.assertEqual(data["arguments"], ["run", "--frozen", "--extra", "isaacsim", "python", "scripts/environments/list_envs.py", "--show_presets"])  # 지원하지 않는 isaaclab list_envs 호출을 막는다.
                 if mode in ("Random", "Train", "Play"):  # 물리 실행이 있는 단계다.
                     self.assertIn("Isaac-Cartpole", data["arguments"])  # 수업 과제 이름을 확인한다.
                     self.assertIn("physics=isaacsim_physx", data["arguments"])  # PhysX 선택이 누락되면 실패한다.
